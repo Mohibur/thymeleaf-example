@@ -8,6 +8,7 @@ import org.thymeleaf.context.Context;
 
 import thymeleaf.thymeleaf.resolvers.CSSTemplateResolver;
 import thymeleaf.thymeleaf.resolvers.HTMLTemplateResolver;
+import thymeleaf.thymeleaf.resolvers.RawTemplateResolver;
 
 /**
  * Hello world!
@@ -15,24 +16,46 @@ import thymeleaf.thymeleaf.resolvers.HTMLTemplateResolver;
  */
 public class App {
 	public static void main(String[] args) {
-		final Context ctx = new Context();
-		TemplateEngine templateEngine = new TemplateEngine();
+		processHtml();
+		processCss();
+		processRaw();
 
-		templateEngine.addTemplateResolver(new HTMLTemplateResolver());
-		// templateEngine.addTemplateResolver(new CSSTemplateResolver());
-		// templateEngine.addTemplateResolver(new JSTemplateResolver());
-		List<String> messages = new ArrayList<String>();
-		messages.add("Hello");
-		messages.add("Lazy");
-		messages.add("World");
-		ctx.setVariable("msgs", messages);
-		System.out.println(templateEngine.process("hello.html", ctx));
-		System.out.println("---------------------------------------------------------");
-		
-		TemplateEngine templateEngineCss = new TemplateEngine();
-		templateEngineCss.addTemplateResolver(new CSSTemplateResolver());
+	}
+
+	private static void processCss() {
+		TemplateEngine templateEngine = new TemplateEngine();
+		templateEngine.addTemplateResolver(new CSSTemplateResolver());
 		Context context = new Context();
 		context.setVariable("fontSize", 10);
-		System.out.println(templateEngineCss.process("main", context));
+		System.out.println(templateEngine.process("main", context));
+		System.out.println("---------------------------------------------------------");
+	}
+
+	private static List<String> messages() {
+		List<String> ret = new ArrayList<String>();
+		ret.add("Hello");
+		ret.add("Lazy");
+		ret.add("World");
+		return ret;
+	}
+
+	private static void processHtml() {
+		final Context context = new Context();
+		TemplateEngine templateEngine = new TemplateEngine();
+		templateEngine.addTemplateResolver(new HTMLTemplateResolver());
+		context.setVariable("msgs", messages());
+		System.out.println(templateEngine.process("hello.html", context));
+		System.out.println("---------------------------------------------------------");
+
+	}
+
+	private static void processRaw() {
+		Context context = new Context();
+		TemplateEngine templateEngine = new TemplateEngine();
+		templateEngine.addTemplateResolver(new RawTemplateResolver());
+		context.setVariable("packageName", "common.style");
+		context.setVariable("msgs", messages());
+		System.out.println(templateEngine.process("main", context));
+		System.out.println("---------------------------------------------------------");
 	}
 }
